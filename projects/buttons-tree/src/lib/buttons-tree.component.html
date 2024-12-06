@@ -1,0 +1,28 @@
+<div class="panel panel-primary" id="shortcut-button-tables" *ngIf="buttonsTree">
+  <div class="shortcut-button-table" #root [attr.data-leveltree]="level_tree">
+    <table class="table table-hover">
+      <tr *ngFor='let row_num of number_of_row; let i = index' class="touch-keyboard-row">
+        <td *ngFor='let scb of getBlockButtons(row_num);  let j = index'>
+
+          <ng-container *ngIf="isHaveChildrens(scb); else elseNotChildrens">
+            <button class="shortcut_button_papa touch-keyboard-key" (pointerup)="handleButtonUp($event,scb)"
+              (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)"
+              [attr.data-childrenleveltree]="level_tree + '.' +  (i + j)" [attr.data-leveltree]="level_tree">
+              {{scb?.data?.itemName}}
+            </button>
+            <button-node [node]="scb" [level]="level + 1" [level_tree]="level_tree + '.' +  (i + j)"></button-node>
+          </ng-container>
+
+          <ng-template #elseNotChildrens>
+            <button class="touch-keyboard-key" (click)="callPapa($event,scb)" (pointerup)="handleButtonUp($event,scb)"
+              (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)">
+              {{scb?.data?.itemName}}
+            </button>
+          </ng-template>
+
+
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

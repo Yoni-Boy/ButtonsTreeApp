@@ -96,6 +96,42 @@
           }
         }
       }
+    },
+    "ButtonsTree": {
+      "projectType": "library",
+      "root": "projects/buttons-tree",
+      "sourceRoot": "projects/buttons-tree/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/buttons-tree/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/buttons-tree/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/buttons-tree/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/buttons-tree/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
