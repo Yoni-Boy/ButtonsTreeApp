@@ -5,7 +5,7 @@
         <td *ngFor='let scb of getBlockButtons(row_num);  let j = index'>
 
           <ng-container *ngIf="isHaveChildrens(scb); else elseNotChildrens">
-            <button class="shortcut_button_papa touch-keyboard-key" (pointerup)="handleButtonUp($event,scb)"
+            <button class="shortcut_button_papa touch-keyboard-key" style="color: brown;" (pointerup)="handleButtonUp($event,scb)"
               (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)"
               [attr.data-childrenleveltree]="level_tree + '.' +  (i + j)" [attr.data-leveltree]="level_tree">
               {{scb?.data?.itemName}}
@@ -14,7 +14,7 @@
           </ng-container>
 
           <ng-template #elseNotChildrens>
-            <button class="touch-keyboard-key" (click)="callPapa($event,scb)" (pointerup)="handleButtonUp($event,scb)"
+            <button class="touch-keyboard-key" style="color:blue;"  (pointerup)="handleButtonUp($event,scb)"
               (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)">
               {{scb?.data?.itemName}}
             </button>

@@ -13,7 +13,6 @@
             (pointerdown)="handleButtonDown($event,scb)"
             (pointercancel)="handleButtonUp($event,scb)"
 
-
             [attr.data-leveltree]="level_tree" 
             [attr.data-childrenleveltree]="level_tree + '.' +  (i + j)">
             {{scb?.data?.itemName}}
