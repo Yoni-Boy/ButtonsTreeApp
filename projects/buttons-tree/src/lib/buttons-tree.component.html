@@ -1,22 +1,28 @@
-<div class="panel panel-primary" id="shortcut-button-tables" *ngIf="buttonsTree">
-  <div class="shortcut-button-table" #root [attr.data-leveltree]="level_tree">
+<div class="panel panel-primary" id="buttons-tree-board" *ngIf="buttonsTree">
+  <div class="buttons-board" #root [attr.data-leveltree]="level_tree">
     <table class="table table-hover">
       <tr *ngFor='let row_num of number_of_row; let i = index' class="touch-keyboard-row">
         <td *ngFor='let scb of getBlockButtons(row_num);  let j = index'>
 
           <ng-container *ngIf="isHaveChildrens(scb); else elseNotChildrens">
-            <button class="shortcut_button_papa touch-keyboard-key" style="color: brown;" (pointerup)="handleButtonUp($event,scb)"
+            <button class="uniform-button parent-button"  (pointerup)="handleButtonUp($event,scb)"
               (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)"
               [attr.data-childrenleveltree]="level_tree + '.' +  (i + j)" [attr.data-leveltree]="level_tree">
-              {{scb?.data?.itemName}}
+              <img *ngIf="scb?.data?.imagePath" [src]="storageRootPath + '/' + scb.data.imagePath" 
+              alt={{scb?.data?.name}}  style="width: 100%;height: 100%;"/>
+              <p>{{scb?.data?.name}}</p>
             </button>
-            <button-node [node]="scb" [level]="level + 1" [level_tree]="level_tree + '.' +  (i + j)"></button-node>
+            <button-node [node]="scb" [buttonBackTitle]="buttonBackTitle" [storageRootPath]="storageRootPath" 
+              style="background-color:transparent;" [level]="level + 1" [level_tree]="level_tree + '.' +  (i + j)">
+            </button-node>
           </ng-container>
 
           <ng-template #elseNotChildrens>
-            <button class="touch-keyboard-key" style="color:blue;"  (pointerup)="handleButtonUp($event,scb)"
+            <button class="uniform-button child-button"  (pointerup)="handleButtonUp($event,scb)"
               (pointerdown)="handleButtonDown($event,scb)" (pointercancel)="handleButtonUp($event,scb)">
-              {{scb?.data?.itemName}}
+              <img *ngIf="scb?.data?.imagePath" [src]="storageRootPath + '/' + scb.data.imagePath" 
+              alt={{scb?.data?.name}}  style="width: 100%;height: 100%;"/>
+              <p>{{scb?.data?.name}}</p>
             </button>
           </ng-template>
 

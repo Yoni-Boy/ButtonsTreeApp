@@ -1,18 +1,21 @@
-// :root {
-//   --tk-color-text: #27272a;
-//   --tk-background: rgba(238, 238, 238, 0.87);
-//   --tk-background-button: rgba(255, 255, 255, 0.96);
-//   --tk-background-button-fn: rgba(255, 255, 255, 0.5);
-//   --tk-background-button-active: rgba(0, 0, 0, 0.04);
-// }
+:root {
+  --tk-color-text: #27272a;
+  --tk-background: rgba(238, 238, 238, 0.87);
+  --tk-background-button: rgba(255, 255, 255, 0.96);
+  --tk-background-button-fn: rgba(255, 255, 255, 0.5);
+  --tk-background-button-active: rgba(0, 0, 0, 0.04);
+  --tk-background-button-parent: rgba(38, 184, 200, 0.355);
+  --uniform-button-width: 100px;
+  --uniform-button-height: 100px;
+}
 
-// .dark {
-//   --tk-color-text: #ffffff;
-//   --tk-background: rgba(33, 33, 33, 0.87);
-//   --tk-background-button: rgba(66, 66, 66, 0.96);
-//   --tk-background-button-fn: rgba(66, 66, 66, 0.5);
-//   --tk-background-button-active: rgba(255, 255, 255, 0.2);
-// }
+.dark {
+  --tk-color-text: #ffffff;
+  --tk-background: rgba(33, 33, 33, 0.87);
+  --tk-background-button: rgba(66, 66, 66, 0.96);
+  --tk-background-button-fn: rgba(66, 66, 66, 0.5);
+  --tk-background-button-active: rgba(255, 255, 255, 0.2);
+}
 
 // .touch-keyboard-row {
 //   display: flex;
@@ -31,7 +34,7 @@
 
 
 
-// .touch-keyboard-key {
+// .uniform-button {
 //   font-size: xx-large; 
 //   color: aqua;
 //   box-sizing: border-box;
@@ -100,31 +103,64 @@
 
 
 
-.shortcut-button-table {
+.buttons-board {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.touch-keyboard-key {
-  width: 150px;
+.buttons-board{
+  @media (max-width: 600px) {
+    .uniform-button {
+      width: 75px;
+      height: 75px;
+      font-size: 12px;
+    }
+  }
+}
+
+.uniform-button {
+  width: var(--uniform-button-width);
   /* Set the desired width */
-  height: 50px;
+  height: var(--uniform-button-height);
   /* Set the desired height */
   text-align: center;
   /* Center the text */
   padding: 10px;
   font-size: 14px;
-  background-color: #007bff;
+  // background-color: #007bff;
   /* Button color */
-  color: white;
+  // color: white;
   /* Text color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
+
+
+  color: var(--tk-color-text);
+  background-color: var(--tk-background-button);
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+    0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+
+  
+  &.active {
+    background-color: var(--tk-background-button-active) !important;
+  }
+
+  &.parent-button {
+    background-color: var(--tk-background-button-parent);
+  }
 }
 
-.touch-keyboard-key:hover {
-  background-color: #0056b3;
-  /* Button color on hover */
-}
+// .uniform-button:hover {
+//   background-color: #0056b3;
+//   /* Button color on hover */
+// }
+
+// @media (max-width: 600px) {
+//   .uniform-button {
+//     width: 50px;
+//     height: 40px;
+//     font-size: 12px;
+//   }
+// }

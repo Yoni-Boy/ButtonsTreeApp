@@ -1,101 +1,157 @@
+// :root {
+//   --tk-color-text: #27272a;
+//   --tk-background: rgba(238, 238, 238, 0.87);
+//   --tk-background-button: rgba(255, 255, 255, 0.96);
+//   --tk-background-button-fn: rgba(255, 255, 255, 0.5);
+//   --tk-background-button-active: rgba(0, 0, 0, 0.04);
+// }
 
-:root {
-    --tk-color-text: #27272a;
-    --tk-background: rgba(238, 238, 238, 0.87);
-    --tk-background-button: rgba(255, 255, 255, 0.96);
-    --tk-background-button-fn: rgba(255, 255, 255, 0.5);
-    --tk-background-button-active: rgba(0, 0, 0, 0.04);
-  }
-  
-  .dark {
-    --tk-color-text: #ffffff;
-    --tk-background: rgba(33, 33, 33, 0.87);
-    --tk-background-button: rgba(66, 66, 66, 0.96);
-    --tk-background-button-fn: rgba(66, 66, 66, 0.5);
-    --tk-background-button-active: rgba(255, 255, 255, 0.2);
-  }
+// .dark {
+//   --tk-color-text: #ffffff;
+//   --tk-background: rgba(33, 33, 33, 0.87);
+//   --tk-background-button: rgba(66, 66, 66, 0.96);
+//   --tk-background-button-fn: rgba(66, 66, 66, 0.5);
+//   --tk-background-button-active: rgba(255, 255, 255, 0.2);
+// }
 
-  .touch-keyboard-row {
-    display: flex;
-    flex-direction: row;
+// // .touch-keyboard-row {
+// //   display: flex;
+// //   flex-direction: row;
 
-    &:not(:last-child) {
-      // margin-bottom: 0.25rem; //we remove
-      margin: 10px; // edit
-    }
-    //this the last keys row in the keyboard
-    &:last-child{
-      margin: 10px;
-    }
-  }
+// //   &:not(:last-child) {
+// //     // margin-bottom: 0.25rem; //we remove
+// //     margin: 10px; // edit
+// //   }
 
-
-
-  .touch-keyboard-key {
-    // width: 30px;
-    font-size: xx-large; //edit
-    color: aqua;
-    box-sizing: border-box;
-    position: relative;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    text-align: center;
-    margin: 0;
-    line-height: 32px;
-    padding: 0.25rem;
-    border-radius: 0.375rem;
-    font-size: x-large;
-    font-weight: 500;
-    display: flex;
-    flex-grow: 1;
-    align-items: center;
-    justify-content: center;
-    color: var(--tk-color-text);
-    background-color: var(--tk-background-button);
-    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
-      0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-
-    > svg {
-      fill: var(--tk-color-text);
-    }
-
-    &.function-key:not(.space-key) {
-      background-color: var(--tk-background-button-fn);
-    }
-
-    &.active {
-      background-color: var(--tk-background-button-active) !important;
-    }
-
-    &.alphabetic-key,
-    &.backspace-key,
-    &.cancel-key,
-    &.shift-key,
-    &.numeric-key,
-    &.symbolic-key,
-    &.language-key,
-    &.enter-key,
-    &.done-key {
-      max-width: 4rem;
-    }
-
-    &.space-key {
-      min-width: 40%;
-    }
-
-    &[data-layout="numeric"],
-    &[data-layout="decimal"],
-    &[data-layout="tel"] {
-      width: 33% !important;
-      max-width: none !important;
-    }
-
-    &:not(:last-child) {
-      margin-right: 0.25rem;
-    }
-  }
+// //   //this the last keys row in the keyboard
+// //   &:last-child {
+// //     margin: 10px;
+// //   }
+// // }
 
 
+
+// // .uniform-button {
+// //   // width: 30px;
+// //   font-size: xx-large; //edit
+// //   color: aqua;
+// //   box-sizing: border-box;
+// //   position: relative;
+// //   -webkit-user-select: none;
+// //   user-select: none;
+// //   cursor: pointer;
+// //   outline: none;
+// //   border: none;
+// //   text-align: center;
+// //   margin: 0;
+// //   line-height: 32px;
+// //   padding: 0.25rem;
+// //   border-radius: 0.375rem;
+// //   font-size: x-large;
+// //   font-weight: 500;
+// //   display: flex;
+// //   flex-grow: 1;
+// //   align-items: center;
+// //   justify-content: center;
+// //   color: var(--tk-color-text);
+// //   background-color: var(--tk-background-button);
+// //   box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+// //     0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+
+// //   >svg {
+// //     fill: var(--tk-color-text);
+// //   }
+
+// //   &.function-key:not(.space-key) {
+// //     background-color: var(--tk-background-button-fn);
+// //   }
+
+// //   &.active {
+// //     background-color: var(--tk-background-button-active) !important;
+// //   }
+
+// //   &.alphabetic-key,
+// //   &.backspace-key,
+// //   &.cancel-key,
+// //   &.shift-key,
+// //   &.numeric-key,
+// //   &.symbolic-key,
+// //   &.language-key,
+// //   &.enter-key,
+// //   &.done-key {
+// //     max-width: 4rem;
+// //   }
+
+// //   &.space-key {
+// //     min-width: 40%;
+// //   }
+
+// //   &[data-layout="numeric"],
+// //   &[data-layout="decimal"],
+// //   &[data-layout="tel"] {
+// //     width: 33% !important;
+// //     max-width: none !important;
+// //   }
+
+// //   &:not(:last-child) {
+// //     margin-right: 0.25rem;
+// //   }
+// // }
+
+// .buttons-board {
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 10px;
+// }
+
+// .uniform-button {
+//   width: 150px;
+//   /* Set the desired width */
+//   height: 50px;
+//   /* Set the desired height */
+//   text-align: center;
+//   /* Center the text */
+//   padding: 10px;
+//   font-size: 14px;
+//   background-color: #007bff;
+//   /* Button color */
+//   color: white;
+//   /* Text color */
+//   border: none;
+//   border-radius: 5px;
+//   cursor: pointer;
+//   .uniform-button {
+//     width: 150px;
+//     /* Set the desired width */
+//     height: 50px;
+//     /* Set the desired height */
+//     text-align: center;
+//     /* Center the text */
+//     padding: 10px;
+//     font-size: 14px;
+//     background-color: #007bff;
+//     /* Button color */
+//     color: white;
+//     /* Text color */
+//     border: none;
+//     border-radius: 5px;
+//     cursor: pointer;
+    
+//     &.active {
+//       background-color: var(--tk-background-button-active) !important;
+//     }
+//   }
+// }
+
+// .uniform-button:hover {
+//   background-color: #0056b3;
+//   /* Button color on hover */
+// }
+
+// @media (max-width: 600px) {
+//   .uniform-button {
+//     width: 50px;
+//     height: 40px;
+//     font-size: 12px;
+//   }
+// }

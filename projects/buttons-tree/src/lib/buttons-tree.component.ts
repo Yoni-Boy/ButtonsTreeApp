@@ -12,9 +12,12 @@ import { ButtonsTreeService } from './buttons-tree.service';
 export class ButtonsTreeComponent implements OnInit, OnChanges {
   
   @ViewChild('root') _elementRootRef: ElementRef<HTMLDivElement> | undefined;
-  //@ViewChild(".shortcut-button-table[data-leveltree='" + children_level_tree + "']") _elementRef: ViewContainerRef | undefined;
+  //@ViewChild(".buttons-board[data-leveltree='" + children_level_tree + "']") _elementRef: ViewContainerRef | undefined;
 
-
+  //This is for adding text to the back button in the panel tree
+  @Input() buttonBackTitle: string = "";  
+  //This is for the images storage root path
+  @Input() storageRootPath: string = "";   
   @Input() buttonsTree: Node[] | undefined;
   @Input() level: number = 0;
   @Input() level_tree: string = "0";
@@ -56,9 +59,9 @@ export class ButtonsTreeComponent implements OnInit, OnChanges {
       const button = event.target as HTMLButtonElement;
       let children_level_tree = button.getAttribute('data-childrenleveltree');
       
-      //var element = document.querySelector('.shortcut-button-table');
-      var rootElem = document.querySelector('#shortcut-button-tables');
-      var childElem = document.querySelector(".shortcut-button-table[data-leveltree='" + children_level_tree + "']");
+      //var element = document.querySelector('.buttons-board');
+      var rootElem = document.querySelector('#buttons-tree-board');
+      var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
 
       //element?.setAttribute('style', 'display:none;');
       this._elementRootRef?.nativeElement.setAttribute('style', 'display:none;');
@@ -66,9 +69,9 @@ export class ButtonsTreeComponent implements OnInit, OnChanges {
       if(childElem)
         rootElem?.append(childElem);
       
-      // $('.shortcut-button-table').attr('style', 'display:none;');
-      // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").attr('style','display:block;');
-      // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").detach().appendTo("#shortcut-button-tables");
+      // $('.buttons-board').attr('style', 'display:none;');
+      // $(".buttons-board[data-leveltree='" + children_level_tree + "']").attr('style','display:block;');
+      // $(".buttons-board[data-leveltree='" + children_level_tree + "']").detach().appendTo("#buttons-tree-board");
 
     }
     else {
@@ -77,7 +80,7 @@ export class ButtonsTreeComponent implements OnInit, OnChanges {
         //this.shoppingCartService.addingItemToShoppingCart(node.data);
       }
     }
-    //$('.shortcut-button-table').attr('style', 'display:none;');
+    //$('.buttons-board').attr('style', 'display:none;');
 
     //var level_tree_node = $(this).data('leveltree');
     //var root_level = ("" + level_tree_node).split(".")[0] + ("" + level_tree_node).split(".")[1];
@@ -158,10 +161,44 @@ export class ButtonsTreeComponent implements OnInit, OnChanges {
       e.stopPropagation();
     }
 
+
+    var isButtonElement = true;
+    if (button instanceof HTMLImageElement) {
+      //If we click up on image we want to capture the parent element.
+      //because the image element is a child in the button element and if we calling to 
+      //'_setActiveButton' with image element we don't and make 'un active' class we don't declare any active class to the image style
+      //that the reason we want to get the parent element of this image this his button, to remove active right to the button
+      //&.active { ...  
+      isButtonElement = false;
+      //console.log("The image element triggered the event.");
+    } 
+    else if (button instanceof HTMLButtonElement) {
+      isButtonElement = true;
+      //console.log("The button element triggered the event.");
+    } 
+    else {
+      isButtonElement = false;
+      //console.log("Another element triggered the event:", button);
+    }
+
+
+
     /**
      * Remove active class
      */
-    this._removeActiveButton(button);
+    //But before we remove the active button We need to check who is trigger this handle button up event.
+    //If this the image event (this element is existent in the button element) so we need to remove the parent active style
+    //and not the image active.
+    
+    if(isButtonElement)
+    { 
+      this._removeActiveButton(button);
+    }
+    else
+    {
+      const parent = button.parentElement as HTMLButtonElement;
+      this._removeActiveButton(parent);
+    }
 
     this._isMouseHold = false;
     if (this._holdInteractionTimeout)
@@ -175,7 +212,7 @@ export class ButtonsTreeComponent implements OnInit, OnChanges {
    * @param event The button event.
    */
 handleButtonDown(e: Event,scb: Node): void {
-  //console.log('Key down:', scb.data?.itemName);
+  console.log('Key down::::', scb.data?.name);
   const button = e.target as HTMLButtonElement;
   if (e) {
     /**
@@ -185,12 +222,43 @@ handleButtonDown(e: Event,scb: Node): void {
     e.stopPropagation();
   }
 
+
+  var isButtonElement = true;
+  if (button instanceof HTMLImageElement) {
+    //If we click on image we want to capture the parent element.
+    //because the image element is a child in the button element and if we calling to 
+    //'_setActiveButton' with image element we don't and make 'active' class we don't declare any active class to the image style
+    //that the reason we want to get the parent element of this image this his button, to set active right to the button
+    //&.active { ...  
+    isButtonElement = false;
+    //console.log("The image element triggered the event.");
+  } 
+  else if (button instanceof HTMLButtonElement) {
+    isButtonElement = true;
+    console.log("The button element triggered the event.");
+  } 
+  else {
+    isButtonElement = false;
+    console.log("Another element triggered the event:", button);
+  }
+
+
+
   /**
    * Add active class
    */
-  if(!this.isHaveChildrens(scb)) 
-    this._setActiveButton(button);
-
+  if(!this.isHaveChildrens(scb))
+  { 
+      if(isButtonElement)
+        { 
+          this._setActiveButton(button);
+        }
+        else
+        {
+          const parent = button.parentElement as HTMLButtonElement;
+          this._setActiveButton(parent);
+        }
+  }
   if (this._holdInteractionTimeout)
     clearTimeout(this._holdInteractionTimeout);
   if (this._holdTimeout) 
@@ -211,7 +279,19 @@ handleButtonDown(e: Event,scb: Node): void {
   /**
    * Handel button Click after button down
    */
-  this.handleButtonPress(e,scb);
+  //!!!! but wait a seconde what happen if we click on <p> element that inside the <button> element so if we calling to
+  // this.handleButtonPress(e,scb) with e parameter the handleButtonPress make convert of this e to 'HTMLButtonElement'
+  //So if we click on <p> or other element inside the button (<button>... <p></p></button>)
+  //We need to get the event of the button so that the reason we getting the parent element that is mean the button
+  if(isButtonElement)
+  {
+    this.handleButtonPress(button,scb);
+  }
+  else
+  {
+    const parent = button.parentElement as HTMLButtonElement;
+    this.handleButtonPress(parent,scb);
+  }
 }
 
  /**
@@ -227,7 +307,7 @@ handleButtonDown(e: Event,scb: Node): void {
    */
   this._holdInteractionTimeout = window.setTimeout(() => {
     if (this._isMouseHold) {
-      this.handleButtonPress(e,scb);
+      this.handleButtonPress(e.target as HTMLButtonElement,scb);
       this.handleButtonHold(e,scb);
     } else {
       clearTimeout(this._holdInteractionTimeout);
@@ -242,35 +322,47 @@ handleButtonDown(e: Event,scb: Node): void {
    * @param button The button layout name.
    * @param event The button event.
    */
-handleButtonPress(event: Event,scb: Node): void {
+handleButtonPress(button: HTMLButtonElement,scb: Node): void {
   this.buttonsTreeService.buttonClicked(scb);
   if (this.isHaveChildrens(scb)) {
-    const button = event.target as HTMLButtonElement;
     let children_level_tree = button.getAttribute('data-childrenleveltree');
     
-    //var element = document.querySelector('.shortcut-button-table');
-    var rootElem = document.querySelector('#shortcut-button-tables');
-    var childElem = document.querySelector(".shortcut-button-table[data-leveltree='" + children_level_tree + "']");
+    var rootElem = document.querySelector('#buttons-tree-board');
+    var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
 
-    //element?.setAttribute('style', 'display:none;');
     this._elementRootRef?.nativeElement.setAttribute('style', 'display:none;');
     childElem?.setAttribute('style', 'display:block;');
     if(childElem)
       rootElem?.append(childElem);
-    
-    // $('.shortcut-button-table').attr('style', 'display:none;');
-    // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").attr('style','display:block;');
-    // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").detach().appendTo("#shortcut-button-tables");
-
   }
   else {
     if (scb.data != undefined)
     {
       this.buttonsTreeService.barrenButtonClicked(scb);
-      //this.shoppingCartService.addingItemToShoppingCart(node.data);
     }
   }  
 }
+// handleButtonPress(event: Event,scb: Node): void {
+//   this.buttonsTreeService.buttonClicked(scb);
+//   if (this.isHaveChildrens(scb)) {
+//     const button = event.target as HTMLButtonElement;
+//     let children_level_tree = button.getAttribute('data-childrenleveltree');
+    
+//     var rootElem = document.querySelector('#buttons-tree-board');
+//     var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
+
+//     this._elementRootRef?.nativeElement.setAttribute('style', 'display:none;');
+//     childElem?.setAttribute('style', 'display:block;');
+//     if(childElem)
+//       rootElem?.append(childElem);
+//   }
+//   else {
+//     if (scb.data != undefined)
+//     {
+//       this.buttonsTreeService.barrenButtonClicked(scb);
+//     }
+//   }  
+// }
 
 
 
@@ -311,12 +403,15 @@ private _removeActiveButton(buttonName?: HTMLButtonElement): void {
 export class ButtonNodeComponent implements OnInit, OnChanges {
   @Input() node: Node | undefined;
 
-  @Input() parentNode: Element | undefined;
-  @Input() rootNode: Element | undefined;
+  // @Input() parentNode: Element | undefined;
+  // @Input() rootNode: Element | undefined;
 
   @ViewChild('node_element') _elementRef: ElementRef<HTMLDivElement> | undefined;
 
-  
+  //This is for adding text to the back button in the panel tree
+  @Input() buttonBackTitle: string = "";  
+  //This is for the images storage root path
+  @Input() storageRootPath: string = "";   
   @Input() level: number = 0;
   @Input() level_tree: string = "0";
   //private _elementDivRef: ElementRef<HTMLDivElement>,
@@ -366,9 +461,9 @@ export class ButtonNodeComponent implements OnInit, OnChanges {
       
       
       
-      var element = document.querySelector('.shortcut-button-table');
-      var rootElem = document.querySelector('#shortcut-button-tables');
-      var childElem = document.querySelector(".shortcut-button-table[data-leveltree='" + children_level_tree + "']");
+      var element = document.querySelector('.buttons-board');
+      var rootElem = document.querySelector('#buttons-tree-board');
+      var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
 
       //element?.setAttribute('style', 'display:none;');
       this._elementRef?.nativeElement.setAttribute('style', 'display:none;');
@@ -378,9 +473,9 @@ export class ButtonNodeComponent implements OnInit, OnChanges {
       
       
       
-      // $('.shortcut-button-table').attr('style', 'display:none;');
-      // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").attr('style', 'display:block;');
-      // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").detach().appendTo("#shortcut-button-tables");
+      // $('.buttons-board').attr('style', 'display:none;');
+      // $(".buttons-board[data-leveltree='" + children_level_tree + "']").attr('style', 'display:block;');
+      // $(".buttons-board[data-leveltree='" + children_level_tree + "']").detach().appendTo("#buttons-tree-board");
 
       //this._elementRef?.nativeElement.setAttribute('style','display:none');
 
@@ -411,9 +506,9 @@ export class ButtonNodeComponent implements OnInit, OnChanges {
         }
       }
       
-      var element = document.querySelector('.shortcut-button-table');
-      var rootElem = document.querySelector('#shortcut-button-tables');
-      var parentElem = document.querySelector(".shortcut-button-table[data-leveltree='" + papa_level_tree + "']");
+      var element = document.querySelector('.buttons-board');
+      var rootElem = document.querySelector('#buttons-tree-board');
+      var parentElem = document.querySelector(".buttons-board[data-leveltree='" + papa_level_tree + "']");
 
       //element?.setAttribute('style', 'display:none;');
       this._elementRef?.nativeElement.setAttribute('style', 'display:none;');
@@ -426,12 +521,44 @@ export class ButtonNodeComponent implements OnInit, OnChanges {
       
       
       // //alert('papa after cut sun:' + papa_level_tree);
-      // $('.shortcut-button-table').attr('style', 'display:none;');
+      // $('.buttons-board').attr('style', 'display:none;');
       // //alert('we make all table to be display none');
-      // $(".shortcut-button-table[data-leveltree='" + papa_level_tree + "']").attr('style', 'display:block;');
+      // $(".buttons-board[data-leveltree='" + papa_level_tree + "']").attr('style', 'display:block;');
       // //alert('we need to check if We find the parent table and change his style to block');
-      // $(".shortcut-button-table[data-leveltree='" + papa_level_tree + "']").detach().appendTo("#shortcut-button-tables");
+      // $(".buttons-board[data-leveltree='" + papa_level_tree + "']").detach().appendTo("#buttons-tree-board");
 
+    }
+    else {
+      alert('not have children');
+    }
+
+  }
+  spanCallBack(event: Event, node: Node | undefined) {
+    //this.shortcutButtonsService.sendShortCutButton(scb);
+    if (this.isHaveChildrens(node)) {
+      //alert('callBack');
+      const button = event.target as HTMLSpanElement;
+      let papa_level_tree = button.getAttribute('data-leveltree');
+      console.warn('papa_level_tree:' + papa_level_tree);
+      //We need to get the papa node, for that all We need to do is to subtract the last node.
+      let papa_level_tree_without_sun = papa_level_tree?.split('.');
+      if (papa_level_tree_without_sun != undefined) {
+        papa_level_tree = '';
+        for (let i = 0; i < papa_level_tree_without_sun.length - 1; i++) {
+          papa_level_tree = papa_level_tree + papa_level_tree_without_sun[i];
+          if (i < papa_level_tree_without_sun.length - 2)
+            papa_level_tree = papa_level_tree + '.'; 
+        }
+      }
+      
+      var element = document.querySelector('.buttons-board');
+      var rootElem = document.querySelector('#buttons-tree-board');
+      var parentElem = document.querySelector(".buttons-board[data-leveltree='" + papa_level_tree + "']");
+
+      this._elementRef?.nativeElement.setAttribute('style', 'display:none;');
+      parentElem?.setAttribute('style', 'display:block;');
+      if(parentElem)
+        rootElem?.append(parentElem);
     }
     else {
       alert('not have children');
@@ -493,12 +620,46 @@ export class ButtonNodeComponent implements OnInit, OnChanges {
       e.preventDefault();
       e.stopPropagation();
     }
+    
+    var isButtonElement = true;
+    if (button instanceof HTMLImageElement) {
+      //If we click up on image we want to capture the parent element.
+      //because the image element is a child in the button element and if we calling to 
+      //'_setActiveButton' with image element we don't and make 'un active' class we don't declare any active class to the image style
+      //that the reason we want to get the parent element of this image this his button, to remove active right to the button
+      //&.active { ...  
+      isButtonElement = false;
+      //console.log("The image element triggered the event.");
+    } 
+    else if (button instanceof HTMLButtonElement) {
+      isButtonElement = true;
+      //console.log("The button element triggered the event.");
+    } 
+    else {
+      isButtonElement = false;
+      //console.log("Another element triggered the event:", button);
+    }
+
+
 
     /**
      * Remove active class
      */
-    this._removeActiveButton(button);
+    //But before we remove the active button We need to check who is trigger this handle button up event.
+    //If this the image event (this element is existent in the button element) so we need to remove the parent active style
+    //and not the image active.
+    
+    if(isButtonElement)
+    { 
+      this._removeActiveButton(button);
+    }
+    else
+    {
+      const parent = button.parentElement as HTMLButtonElement;
+      this._removeActiveButton(parent);
+    }
 
+    
     this._isMouseHold = false;
     if (this._holdInteractionTimeout)
       clearTimeout(this._holdInteractionTimeout);
@@ -521,12 +682,43 @@ handleButtonDown(e: Event,scb: Node): void {
     e.stopPropagation();
   }
 
+  var isButtonElement = true;
+  if (button instanceof HTMLImageElement) {
+    //If we click on image we want to capture the parent element.
+    //because the image element is a child in the button element and if we calling to 
+    //'_setActiveButton' with image element we don't and make 'active' class we don't declare any active class to the image style
+    //that the reason we want to get the parent element of this image this his button, to set active right to the button
+    //&.active { ...  
+    isButtonElement = false;
+    //console.log("The image element triggered the event.");
+  } 
+  else if (button instanceof HTMLButtonElement) {
+    isButtonElement = true;
+    //console.log("The button element triggered the event.");
+  } 
+  else {
+    isButtonElement = false;
+    //console.log("Another element triggered the event:", button);
+  }
+
+
+
+
   /**
    * Add active class
    */
-  if(!this.isHaveChildrens(scb)) 
-    this._setActiveButton(button);
-
+  if(!this.isHaveChildrens(scb))
+  { 
+    if(isButtonElement)
+    { 
+      this._setActiveButton(button);
+    }
+    else
+    {
+      const parent = button.parentElement as HTMLButtonElement;
+      this._setActiveButton(parent);
+    }
+  }
   if (this._holdInteractionTimeout)
     clearTimeout(this._holdInteractionTimeout);
   if (this._holdTimeout) 
@@ -547,7 +739,22 @@ handleButtonDown(e: Event,scb: Node): void {
   /**
    * Handel button Click after button down
    */
-  this.handleButtonPress(e,scb);
+     /**
+   * Handel button Click after button down
+   */
+  //!!!! but wait a seconde what happen if we click on <p> element that inside the <button> element so if we calling to
+  // this.handleButtonPress(e,scb) with e parameter the handleButtonPress make convert of this e to 'HTMLButtonElement'
+  //So if we click on <p> or other element inside the button (<button>... <p></p></button>)
+  //We need to get the event of the button so that the reason we getting the parent element that is mean the button
+  if(isButtonElement)
+  {
+    this.handleButtonPress(button,scb);
+  }
+  else
+  {
+    const parent = button.parentElement as HTMLButtonElement;
+    this.handleButtonPress(parent,scb);
+  }
 }
 
  /**
@@ -563,7 +770,7 @@ handleButtonDown(e: Event,scb: Node): void {
    */
   this._holdInteractionTimeout = window.setTimeout(() => {
     if (this._isMouseHold) {
-      this.handleButtonPress(e,scb);
+      this.handleButtonPress(e.target as HTMLButtonElement,scb);
       this.handleButtonHold(e,scb);
     } else {
       clearTimeout(this._holdInteractionTimeout);
@@ -578,44 +785,52 @@ handleButtonDown(e: Event,scb: Node): void {
    * @param button The button layout name.
    * @param event The button event.
    */
-handleButtonPress(event: Event,scb: Node): void {
+handleButtonPress(button: HTMLButtonElement,scb: Node): void {
   this.buttonsTreeService.buttonClicked(scb);
-  //console.log('press:', scb.data?.itemName);
-  //this.shortcutButtonsService.sendShortCutButton(scb);
   if (this.isHaveChildrens(scb)) {
-    const button = event.target as HTMLButtonElement;
     let children_level_tree = button.getAttribute('data-childrenleveltree');
     
-    
-    
-    var element = document.querySelector('.shortcut-button-table');
-    var rootElem = document.querySelector('#shortcut-button-tables');
-    var childElem = document.querySelector(".shortcut-button-table[data-leveltree='" + children_level_tree + "']");
+        
+    var element = document.querySelector('.buttons-board');
+    var rootElem = document.querySelector('#buttons-tree-board');
+    var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
 
-    //element?.setAttribute('style', 'display:none;');
     this._elementRef?.nativeElement.setAttribute('style', 'display:none;');
     childElem?.setAttribute('style', 'display:block;');
     if(childElem)
       rootElem?.append(childElem);
-    
-    
-    
-    // $('.shortcut-button-table').attr('style', 'display:none;');
-    // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").attr('style', 'display:block;');
-    // $(".shortcut-button-table[data-leveltree='" + children_level_tree + "']").detach().appendTo("#shortcut-button-tables");
-
-    //this._elementRef?.nativeElement.setAttribute('style','display:none');
-
   }
   else {
     if (scb.data != undefined)
     {
       this.buttonsTreeService.barrenButtonClicked(scb);
-      //this.shoppingCartService.addingItemToShoppingCart(scb.item);
     }
-  }
-  
+  }  
 }
+// handleButtonPress(event: Event,scb: Node): void {
+//   this.buttonsTreeService.buttonClicked(scb);
+//   if (this.isHaveChildrens(scb)) {
+//     const button = event.target as HTMLButtonElement;
+//     let children_level_tree = button.getAttribute('data-childrenleveltree');
+    
+    
+    
+//     var element = document.querySelector('.buttons-board');
+//     var rootElem = document.querySelector('#buttons-tree-board');
+//     var childElem = document.querySelector(".buttons-board[data-leveltree='" + children_level_tree + "']");
+
+//     this._elementRef?.nativeElement.setAttribute('style', 'display:none;');
+//     childElem?.setAttribute('style', 'display:block;');
+//     if(childElem)
+//       rootElem?.append(childElem);
+//   }
+//   else {
+//     if (scb.data != undefined)
+//     {
+//       this.buttonsTreeService.barrenButtonClicked(scb);
+//     }
+//   }  
+// }
 
 
 

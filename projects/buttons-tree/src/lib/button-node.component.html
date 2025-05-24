@@ -1,13 +1,16 @@
-<div class="panel panel-primary shortcut-button-table" #node_element [attr.data-leveltree]="level_tree" style="display:none;">
+<div class="panel panel-primary buttons-board" #node_element [attr.data-leveltree]="level_tree" style="display:none;">
     <div class="panel-heading">
-      <button [attr.data-leveltree]="level_tree" (click)="callBack($event,node)">Back</button>
+      <button [attr.data-leveltree]="level_tree" class="back-button" (click)="callBack($event,node)">
+        {{buttonBackTitle}}
+        <!-- <span class="fa fa-arrow-left" [attr.data-leveltree]="level_tree"  (click)="spanCallBack($event,node)">{{buttonBackTitle}}</span> -->
+      </button>
     </div>
   
     <table class="table table-hover">
       <ng-container *ngIf="isHaveChildrens(node); else elseNotChildrens">
         <tr *ngFor='let row_num of number_of_row; let i = index' class="shortcut_buttons_tr touch-keyboard-row" [attr.data-leveltree]="level_tree">
-          <td *ngFor='let scb of getBlockButtons(row_num); let j = index'>
-            <button class="shortcut_button_papa touch-keyboard-key" 
+          <td *ngFor='let scb of getBlockButtons(row_num); let j = index' class="shortcut_buttons_td">
+            <button  [ngClass]="isHaveChildrens(scb)? 'parent-button uniform-button' : 'child-button uniform-button'" 
             
             (pointerup)="handleButtonUp($event,scb)"
             (pointerdown)="handleButtonDown($event,scb)"
@@ -15,10 +18,15 @@
 
             [attr.data-leveltree]="level_tree" 
             [attr.data-childrenleveltree]="level_tree + '.' +  (i + j)">
-            {{scb?.data?.itemName}}
+              <!-- <img *ngIf="scb?.data?.imagePath" src='{{scb?.data?.imagePath}}' alt="{{scb?.data?.name}}"/> -->
+              <img *ngIf="scb?.data?.imagePath" [src]="storageRootPath + '/' + scb.data.imagePath" 
+              alt={{scb?.data?.name}}  style="width: 100%;height: 100%;"/>
+              <p>{{scb?.data?.name}}</p>
           </button>
             <ng-container *ngIf="isHaveChildrens(scb)">
-              <button-node [node]="scb" [level]="level + 1" [level_tree]="level_tree + '.' +  (i + j)"></button-node>
+              <button-node [node]="scb" [buttonBackTitle]="buttonBackTitle" [storageRootPath]="storageRootPath"
+              [level]="level + 1" [level_tree]="level_tree + '.' +  (i + j)">
+              </button-node>
             </ng-container>
   
           </td>
@@ -29,11 +37,11 @@
       <ng-template #elseNotChildrens>
         <tr>
           <td>
-            <button class="touch-keyboard-key" *ngIf="node"
+            <button class="uniform-button child-button" *ngIf="node"
             (pointerup)="handleButtonUp($event,node)"
             (pointerdown)="handleButtonDown($event,node)"
             (pointercancel)="handleButtonUp($event,node)"
-            >{{node.data?.itemName}}</button>
+            >{{node.data.name}}</button>
           </td>
         </tr>
       </ng-template>
